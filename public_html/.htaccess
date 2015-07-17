@@ -1,0 +1,7 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+#RewriteCond %{DOCUMENT_ROOT}}%{QUERY_STRING} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !\.(css|js|jpg|png)$
+RewriteRule ^(.*)$ /index.php?/$1 [L,QSA]
