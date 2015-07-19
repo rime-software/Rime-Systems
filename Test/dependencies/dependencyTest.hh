@@ -1,6 +1,6 @@
 <?hh // strict
 
-class dependencyTest extends PHPUnit_Framework_TestCase
+class dependencyTest extends \PHPUnit_Framework_TestCase
 {
   protected string $HHVM_VERSION;
   
