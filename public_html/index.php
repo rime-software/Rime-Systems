@@ -64,7 +64,7 @@
         $controller = new BASE_PATH.$controllerName();
       }
       
-      $controller->renderer = new \Rime\ActionController\Render\Renderer;
+      //$controller->renderer = new \Rime\ActionController\Render\Renderer;
       
       $params = array();
       
