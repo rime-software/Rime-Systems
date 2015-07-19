@@ -1,4 +1,4 @@
-<?hh
+<?hh 
 
   namespace Application
   {
@@ -6,12 +6,11 @@
     require_once '../Config/config.hh';
 
     $Rime = \Rime\System\Framework\Rime::getInstance();    
-    $Rime->attach( new \Rime\System\Performance\MicroTimer(),'timer');
     $Rime->attach( new \Rime\System\Framework\Loader(),'load');
     $Rime->attach( new \Rime\ActionDispatch\Session\Factory\SessionFactory,'sessionFactory');
-    
-    $Rime->timer->addTimer("executionTime");
-    
+    $Rime->attach($viewMap,'viewMap');
+    $Rime->attach($templateMap,'templateMap');
+
   //-------------------
   // Check Route Caching
     
@@ -38,7 +37,7 @@
   	$_SERVER['REQUEST_URI'] = (substr($_SERVER['REQUEST_URI'],-1) == '/' && strlen($_SERVER['REQUEST_URI']) > 1) ? substr($_SERVER['REQUEST_URI'],0,-1) : $_SERVER['REQUEST_URI'];
   	$path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
   	$route = $router->match($path, $_SERVER);
-    
+
   //-------------------
   // Check whether a route has been found 
 
@@ -64,8 +63,6 @@
         $controller = new BASE_PATH.$controllerName();
       }
       
-      //$controller->renderer = new \Rime\ActionController\Render\Renderer;
-      
       $params = array();
       
       if( preg_match_all('/{+(.*?)}/', $route->path, $getParams) )
@@ -77,8 +74,16 @@
         unset($getParams);
       }
       
-      call_user_func_array(array($controller,$actionName), $params);
-
+      if(method_exists($controller, $actionName))
+      {
+        call_user_func_array(array($controller,$actionName), $params);
+      }
+      else
+      {
+        throw new \Rime\ActionController\Exception\UndefinedAction(
+          "Call to undefined action '".$actionName."' in class ".get_class($controller)
+        );
+      }
   //-------------------
   // Make sure the controller can respond to the following formats
         
@@ -113,15 +118,9 @@
   
           case '.html':
           
-            $controller->addData((array)$controller->getData());
-  //-------------------
-  // Load in the registries
-      
-            $controller->view->setRegistries(
-              new \Rime\ActionView\Registry\TemplateRegistry($viewMap),
-              new \Rime\ActionView\Registry\TemplateRegistry($templateMap)
-            );
-      
+            $controller->loadViewRegistries();
+            $controller->view->addData((array)$controller->getData());
+
   //-------------------
   // Execute the requested action TODO: Add validation
             
@@ -168,8 +167,6 @@
             break;
         }
         
-        //$Rime->timer->printMessage("Script Execution took %0.9f seconds.",'executionTime');
-          
       }
       else
       {
