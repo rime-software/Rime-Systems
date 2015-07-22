@@ -36,7 +36,19 @@ class apiController extends Base
 
     if($api_key && $api_key->validate_secret(Rime::filter_post('secret')))
     {
-      $this->validated = true; 
+      $session = $this->Rime->sessionFactory->newInstance($_COOKIE);
+      $api_session = $session->getSegment('API\User');
+      $api_session->set('key',$api_key->key);
+      $api_session->set('session_id',$session->getId());
+      $session->commit();
+      
+      $this->session_id = $api_session->get('session_id');
+      $this->key        = $api_session->get('key');
+      $this->last_login = $api_key->last_updated;
+      $this->last_ip    = $api_key->ip_addr;
+      
+      $api_key->ip_addr = $_SERVER['REMOTE_ADDR'];
+      $api_key->save();
     }
     else
     {

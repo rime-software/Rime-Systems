@@ -80,7 +80,7 @@ class apiControllerTest extends \PHPUnit_Framework_TestCase
   
   public function test_login_action_errors_with_invalid_credentials(): void
   {
-    $_POST['key'] = ApiKey::first()->key;
+    $_POST['key']    = ApiKey::first()->key;
     $_POST['secret'] = "invalid";
     
     $this->controller->login();
@@ -90,16 +90,48 @@ class apiControllerTest extends \PHPUnit_Framework_TestCase
     );
   }
   
-  public function test_login_action_registers_session_with_valid_credentials(): void
+  public function test_login_action_registers_session(): void
   {
-    $_POST['key'] = ApiKey::first()->key;
-    $_POST['secret'] = "password";
-    
-    $this->controller->login();
-    $this->assertTrue($this->controller->validated,
-      "apiController#login did properly register a session with valid API credentials."
+    $this->mock_valid_login_request();
+    $this->assertEquals($_SESSION['API\User']['key'], ApiKey::first()->key,
+      "apiController#login failed to register the API key in _SESSION.API\User.key."
     );
-
+  }
+  
+  public function test_login_action_response(): void
+  {
+    $this->mock_valid_login_request();
+    $this->assertTrue(is_string($this->controller->session_id),
+      "apiController#login failed to respond with a session_id"
+    );
+    $this->assertEquals(ApiKey::first()->key, $this->controller->key,
+      "apiController#login failed to respond with the proper ApiKey"
+    );
+    $this->assertEquals(ApiKey::first()->last_updated, $this->controller->last_login,
+      "apiController#login failed to respond with the ApiKeys last_updated attribute"
+    );
+    $this->assertEquals(ApiKey::first()->ip_addr, $this->controller->last_ip,
+      "apiController#login failed to respond with the ApiKeys last_ip attribute"
+    );
+  }
+  
+  public function test_login_action_updates_ip_addr(): void
+  {
+    $this->mock_valid_login_request();
+    $this->assertEquals(ApiKey::first()->ip_addr,'fake_ip',
+      "apiController#login failed to update the ApiKey last login ip "
+    );
+  }
+  
+  private function mock_valid_login_request(): void
+  {
+    $_POST['key']    = ApiKey::first()->key;
+    $_POST['secret'] = "password";
+    $_SESSION        = array();
+    $_SERVER         = array();
+    
+    $_SERVER['REMOTE_ADDR'] = "fake_ip";
+    $this->controller->login();
   }
   
 }
