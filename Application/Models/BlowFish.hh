@@ -4,12 +4,12 @@ namespace Application\Models;
 
 class BlowFish
 {
-	public static function generate_salt($type="salt")
+	public static function generate_salt($type="$2a$07$")
 	{
-		$string = $type.'B10wF1$h3nCrYpTr1m3';
+		$string = 'B10wF1$h3nCrYpTr1m3';
 		$string .= strtotime(date('Y-m-d'));
 		
-		return crypt($string,self::random_hash());	
+		return crypt($string,$type.self::random_hash());	
 	}
 
 	public static function crypt_salted_string($password,$salt)

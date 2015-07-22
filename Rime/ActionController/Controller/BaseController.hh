@@ -75,9 +75,20 @@ abstract class BaseController implements \Rime\ActionController\Implementation\i
     $results = \Rime\ActionController\Filter\FilterFactory::newInstance($type,$namespace)->filter(
       $action, $filter_data
     );
-    
+
     $this->execute_filter_actions($results);
     
+  }
+  
+  public function getFilter(string $filter_type): ?array<string>
+  {
+    switch($filter_type)
+    {
+      case 'Before':
+        return $this::$before_filter;
+      default:
+        return null;
+    }
   }
   
   protected function redirect_to(string $url, bool $replace = true, $redirect_code = 301, string $content_type = 'text/html'): void

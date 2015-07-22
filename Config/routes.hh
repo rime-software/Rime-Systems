@@ -16,18 +16,17 @@ $router->addGet('home','/')->addValues(
 
 $router->setNamespace('v1','/api/v1',function($route){
   
-  $route->addPost('authorize','/login')->addValues(
-    array(
-      'controller' => 'auth',
-      'action'     => 'login'
-    )
-  );
-  
   $route->addValues(array(
-    'controller'=>'test',
-    'action'=>'index'
+    'controller' => 'api',
+    'action'     => 'index'
   ));
   
-  $route->addGet('test','/test');
+  $route->add('api_info','');
+  
+  $route->add('gateway','/{action}')->addValues(
+    array(
+      'action' => 'login'
+    )
+  );
    
 },['format'=>'.json']);
