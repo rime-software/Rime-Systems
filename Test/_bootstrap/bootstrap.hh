@@ -9,8 +9,6 @@
   require_once 'Config/config.hh';
   require_once 'migrations.hh';
   
-  echo "\n Debug: ".getcwd()."\n";
-  
   //----------
   // Make some Rime configs global
   $Rime = \Rime\System\Framework\Rime::getInstance();    

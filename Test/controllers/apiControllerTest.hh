@@ -1,6 +1,6 @@
 <?hh // strict
 
-require_once 'traits/loginTrait.hh';
+require_once BASE_PATH.'/Test/traits/loginTrait.hh';
 
 use \Application\Controllers\v1\apiController as apiController;
 use \Application\Models\ApiKey                as ApiKey;
