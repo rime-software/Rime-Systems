@@ -7,6 +7,7 @@
   //----------
   // Load framework configurations
   require_once '../Config/config.hh';
+  require_once 'migrations.hh';
   
   //----------
   // Make some Rime configs global
