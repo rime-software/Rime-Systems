@@ -1,9 +1,20 @@
 <phpunit bootstrap="_bootstrap/bootstrap.hh" backupGlobals="false">
 	
   <testsuites>
+    
     <testsuite name="dependencies">
-        <directory>dependencies/</directory>
+        <file>dependencies/dependencyTest.hh</file>
     </testsuite>
+    
+    <testsuite name="controllers">
+        <file>controllers/indexControllerTest.hh</file>
+        <file>controllers/apiControllerTest.hh</file>
+        <file>controllers/userControllerTest.hh</file>
+    </testsuite>
+    
+    <testsuite name="models">
+        <file>models/BlowFishTest.hh</file>
+    </testsuite>
+    
   </testsuites>
-
 </phpunit>

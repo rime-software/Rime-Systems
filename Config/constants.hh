@@ -30,3 +30,6 @@ define('TEMPLATE_PATH',APPLICATION_PATH.'/Views');
 define('MODEL_PATH',APPLICATION_PATH.'/Models');
 
 define('DEFAULT_TEMPLATE','master');
+
+define('API_VERSION','1.0.0');
+define('COPY_RIGHT','Copyright '.date('Y').' Rime Systems.');

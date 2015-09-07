@@ -8,6 +8,8 @@ abstract class BaseController implements \Rime\ActionController\Implementation\i
   public \Rime\ActionController\Render\Renderer $renderer;
   protected Map<Mixed> $data = Map {};
   
+  public static array<string> $before_filter = array();
+  
   public function __construct(){}
   
   public function respondTo(callable $lambda): void
@@ -28,16 +30,79 @@ abstract class BaseController implements \Rime\ActionController\Implementation\i
   
   public function &getRenderer(): \Rime\ActionController\Render\Renderer
   {
+    if(is_null($this->renderer))
+    {
+      $this->renderer = new \Rime\ActionController\Render\Renderer;
+    }
     return $this->renderer;
   }
-
-  public function __call(string $method, array $arguments): mixed
+  
+  public function loadViewRegistries(): ?\Rime\ActionView\Render\View
   {
     if(is_null($this->view))
     {
+      $Rime = \Rime\System\Framework\Rime::getInstance();
       $this->view = (new \Rime\ActionView\Factory\ViewFactory)->newInstance();
+      $this->view->setRegistries(
+        new \Rime\ActionView\Registry\TemplateRegistry($Rime->viewMap),
+        new \Rime\ActionView\Registry\TemplateRegistry($Rime->templateMap)
+      );
     }
-    $this->view->$method($arguments[0] ? $arguments : false);
+    return $this->view;
+  }
+  
+  public function render(string $name, array $data = array()): ?string
+  {
+    if(is_null($this->view))
+    {
+      $this->loadViewRegistries();
+    }
+    $this->view->setView($name);
+    echo $this->view->__invoke($data);
+  }
+  
+  public function filter(string $action, string $type = 'Before', $namespace = '\\Rime\\ActionController\\Filter\\'): void
+  {
+    $filter_data = null;
+    switch($type)
+    {
+      case 'Before':
+        $filter_data = $this::$before_filter;
+        break;
+      default:
+        
+    }
+    $results = \Rime\ActionController\Filter\FilterFactory::newInstance($type,$namespace)->filter(
+      $action, $filter_data
+    );
+
+    $this->execute_filter_actions($results);
+    
+  }
+  
+  public function getFilter(string $filter_type): ?array<string>
+  {
+    switch($filter_type)
+    {
+      case 'Before':
+        return $this::$before_filter;
+      default:
+        return null;
+    }
+  }
+  
+  protected function redirect_to(string $url, bool $replace = true, $redirect_code = 301, string $content_type = 'text/html'): void
+  {
+    header('Content-Type: '.$content_type);
+    header('Location: '.$url, $replace, $redirect_code);
+  }
+  
+  private function execute_filter_actions(array<string> $actions): mixed
+  {
+    foreach($actions as $action)
+    {
+      $this->$action();
+    }
   }
   
   public function __set(string $name, Mixed $value): void
