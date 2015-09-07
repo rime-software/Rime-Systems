@@ -1,5 +1,7 @@
 <?hh // strict
 
+require_once 'traits/loginTrait.hh';
+
 use \Application\Controllers\v1\apiController as apiController;
 use \Application\Models\ApiKey                as ApiKey;
 use \Application\Models\BlowFish              as BlowFish;
@@ -7,6 +9,9 @@ use \Application\Models\Company               as Company;
 
 class apiControllerTest extends \PHPUnit_Framework_TestCase
 {
+  
+  use loginTrait;
+  
   protected ?apiController $controller = null;
   
   public static function setUpBeforeClass(): void
@@ -80,11 +85,7 @@ class apiControllerTest extends \PHPUnit_Framework_TestCase
   
   public function test_login_action_errors_with_invalid_credentials(): void
   {
-    $_POST['key']    = ApiKey::first()->key;
-    $_POST['secret'] = "invalid";
-    
-    $this->controller->login();
-    
+    $this->mock_invalid_login_request(); 
     $this->assertTrue(array_key_exists('message', $this->controller->error),
       "apiController#login did not execute unauthorized action with invalid API credentials."
     );
@@ -123,15 +124,13 @@ class apiControllerTest extends \PHPUnit_Framework_TestCase
     );
   }
   
-  private function mock_valid_login_request(): void
+  public function test_require_login_valid_session(): void
   {
-    $_POST['key']    = ApiKey::first()->key;
-    $_POST['secret'] = "password";
-    $_SESSION        = array();
-    $_SERVER         = array();
-    
-    $_SERVER['REMOTE_ADDR'] = "fake_ip";
-    $this->controller->login();
+    $this->mock_valid_login_request();
+    $this->controller->require_login();
+    $this->assertTrue(strlen($this->controller->csrf_token) == 128,
+      "apiController#require_login failed to generate a valid csrf_token for valid session"
+    );
   }
   
 }

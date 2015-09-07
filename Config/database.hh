@@ -6,8 +6,8 @@
   {
     $cfg->set_model_directory(MODEL_PATH);
     $cfg->set_connections(array(
-        'development' => 'mysql://development:pass@localhost/db',
-        'test' => 'mysql://test:pass@localhost/db',
+        'development' => 'mysql://rime:a007mxg999@192.168.1.113/rime_systems',
+        'test' => 'mysql://rime:a007mxg999@192.168.1.113/rime_test',
       )
     );
   });
@@ -19,4 +19,3 @@
   {
     $cfg->set_default_connection('test');
   }
-  

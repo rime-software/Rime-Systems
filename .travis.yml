@@ -1,0 +1,10 @@
+# rimesoftware api framework travis file
+language: php
+
+php:
+  - hhvm
+
+before_script:
+  - mysql -e "create database IF NOT EXISTS rime_test;" -uroot
+  
+script: phpunit --configuration Test/phpunit.xml --coverage-text

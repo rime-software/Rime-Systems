@@ -9,6 +9,7 @@
     <testsuite name="controllers">
         <file>controllers/indexControllerTest.hh</file>
         <file>controllers/apiControllerTest.hh</file>
+        <file>controllers/userControllerTest.hh</file>
     </testsuite>
     
     <testsuite name="models">

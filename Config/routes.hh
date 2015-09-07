@@ -13,9 +13,33 @@ $router->addGet('home','/')->addValues(
 	)
 );
 
+$router->addGet('test','/test')->addValues(
+	array(
+		'controller'=>'index',
+		'action'=>'test',
+		'template'=>'master',
+		'format'=>'.html'
+	)
+);
 
+
+//---------------------------
+// V1 API
 $router->setNamespace('v1','/api/v1',function($route){
   
+  //---------------------------
+  // User Routes
+  
+  $route->addValues(array(
+    'controller' => 'user',
+    'action'     => 'current_user'
+  ));
+  
+  $route->addGet('current_user','/me');
+  
+  //---------------------------
+  // Authentication / Index Controller
+   
   $route->addValues(array(
     'controller' => 'api',
     'action'     => 'index'
